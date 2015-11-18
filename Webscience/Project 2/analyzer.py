@@ -208,7 +208,7 @@ class Analyzer():
             print('Time duration ', elapsed_time, 's')
 
 an = Analyzer()
-an.run('edges.dot', 'utwente_result.txt', 100, True)
+an.run('Input/edges.dot', 'Output/utwente_result.txt', 100, True)
 
 
 
