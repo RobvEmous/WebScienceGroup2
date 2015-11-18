@@ -1,6 +1,6 @@
 import networkx as nx
-import tools as tools
-import time as time
+import tools
+import time
 from heapq import heappush, heappop
 from itertools import count
 
