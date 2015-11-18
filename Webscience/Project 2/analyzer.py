@@ -1,6 +1,6 @@
 import networkx as nx
-import tools as tools
-import time as time
+import tools
+import time
 from heapq import heappush, heappop
 from itertools import count
 
@@ -20,15 +20,9 @@ class Analyzer():
         :param scc:
         :return giant component:
         '''
-        largest_component = None
-        largest_size = 0
-        for c in scc:
-            component_size = len(c)
-            if component_size > largest_size:
-                largest_component = c
-                largest_size = component_size
-        scc.remove(largest_component)
-        return largest_component
+        gscc = max(scc, key=lambda x:len(x))
+        scc.remove(gscc)
+        return gscc
 
     def generate_pagerank(self, graph):
         '''
@@ -39,7 +33,7 @@ class Analyzer():
         pr = nx.pagerank(graph, alpha=0.9)
         return sorted(pr.items(), key=lambda x:x[1])
 
-    def generate_in(self, graph, scc, gscc, interval, print):
+    def generate_in_out(self, graph, scc, gscc, interval, print):
         '''
         Generates the in and out sets of @param graph and the strongly connected components which make up these sets.
         :param graph:
@@ -65,13 +59,13 @@ class Analyzer():
                 scc.remove(c)
         return inc, incsubsets, outc, outcsubsets
 
-    def generate_tend_tun_disc(self, graph, incsubsets, outcsubsets, scc, gscc, interval, print):
+    def generate_tend_tun_disc(self, graph, incsubsets, outcsubsets, scc, interval, print):
         tenc, tubec, disc = set(), set(), set()
         sccsize = len(scc)
         for index, c in enumerate(scc):
             c_node = next(iter(c))
             if print:
-                tools.print_process('Generating tentil & tube & disconnected sets: ', index, sccsize, interval)
+                tools.print_process('Generating tendrils & tube & disconnected sets: ', index, sccsize, interval)
             found = False
             for inc in incsubsets:
                 in_node = next(iter(inc))
@@ -179,33 +173,37 @@ class Analyzer():
     def can_reach(self, graph, start, stop):
         return self.path_exists_bi_dijkstra(graph, start, stop)
 
+    def my_print(self, pp, *txt):
+        if pp:
+            for tx in txt[:-1]:
+                print(tx),
+            print(txt[-1])
+
     def run(self, source, dest, treshold, pp):
         print_interval = 100
         start_time = time.time()
         graph = tools.load_graph(source, treshold)
-        if pp:
-            print('Graph loaded from ', source)
+        self.my_print(pp, 'Graph loaded from ', source)
+
         pr = self.generate_pagerank(graph)
-        if pp:
-            print('Pagerank calculated')
+        self.my_print(pp, 'Pagerank calculated')
+
         scc = self.yield_scc(graph)
-        if pp:
-            print('Found scc')
+        self.my_print(pp, 'Found scc\'s - amount = ', len(scc))
+
         gscc = self.yield_gscc(scc)
-        if pp:
-            print('Found gscc')
-        inc, incsubsets, outc, outcsubsets = self.generate_in(graph, scc, gscc, print_interval, pp)
-        if pp:
-            print('Found the in & out sets')
-        tenc, tubec, disc = self.generate_tend_tun_disc(graph, incsubsets, outcsubsets, scc, gscc, print_interval, pp)
-        if pp:
-            print('Found tendril & tube & disconnected sets')
+        self.my_print(pp, 'Found scc\'s - len = ', len(gscc))
+
+        inc, incsubsets, outc, outcsubsets = self.generate_in_out(graph, scc, gscc, print_interval, pp)
+        self.my_print(pp, 'Found the in & out sets')
+
+        tenc, tubec, disc = self.generate_tend_tun_disc(graph, incsubsets, outcsubsets, scc, print_interval, pp)
+        self.my_print(pp, 'Found tendrils & tube & disconnected sets')
+
         tools.write_results(dest, pr, inc, outc, tenc, tubec, disc)
-        if pp:
-            print('Writing results to ', dest)
+        self.my_print(pp, 'Writing results to ', dest)
         elapsed_time = time.time() - start_time
-        if pp:
-            print('Time duration ', elapsed_time, 's')
+        self.my_print(pp, 'Time duration ', elapsed_time, 's')
 
 an = Analyzer()
 an.run('Input/edges.dot', 'Output/utwente_result.txt', 100, True)

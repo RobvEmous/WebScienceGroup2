@@ -1,36 +1,37 @@
 import networkx as nx
-import re as re
+import re
+import time
 
-seperator, newline, divider = '-----', '\n', '/'
+separator, newline, divider = '-----', '\n', '/'
+
 
 def load_graph(location, treshold):
-
     graph = nx.DiGraph()
+    start_time = time.time()
     with open(location, 'r') as file:
         for line in file:
             connections = re.split(' -> {', line)
             if connections:
-                node = re.findall('\d+', connections[0])
-                if len(node) == 1:
-                    predecessors = re.findall('\d+', connections[1])
-                    if len(predecessors) > treshold:
-                        for elem in predecessors:
-                            graph.add_edge(node[0], elem)
+                predecessors = re.findall('\d+', connections[1])
+                if len(predecessors) > treshold:
+                    for elem in predecessors:
+                        graph.add_edge(connections[0], elem)
+    print('time: ' + str(time.time() - start_time))
     return graph
 
 
 def write_results(location, pr, inc, outc, tenc, tubec, disc):
     with open(location, 'w') as file:
         file.write('Pagerank: ' + str(pr) + newline)
-        file.write(seperator + newline)
+        file.write(separator + newline)
         file.write('In: ' + str(inc) + newline)
-        file.write(seperator + newline)
+        file.write(separator + newline)
         file.write('Out: ' + str(outc) + newline)
-        file.write(seperator + newline)
+        file.write(separator + newline)
         file.write('Tendrils: ' + str(tenc) + newline)
-        file.write(seperator + newline)
+        file.write(separator + newline)
         file.write('Tubes: ' + str(tubec) + newline)
-        file.write(seperator + newline)
+        file.write(separator + newline)
         file.write('Disconnected: ' + str(disc) + newline)
 
 def print_process(text, current, total, interval):
