@@ -47,7 +47,7 @@
         </entry>
       </file>
       <file leaf-file-name="result.txt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Project 2/result.txt">
+        <entry file="file://$PROJECT_DIR$/Project 2/Output/result.txt">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2657593">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -57,7 +57,7 @@
         </entry>
       </file>
       <file leaf-file-name="utwente_result.txt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Project 2/utwente_result.txt">
+        <entry file="file://$PROJECT_DIR$/Project 2/Output/utwente_result.txt">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="289">
               <caret line="0" column="18" selection-start-line="0" selection-start-column="13" selection-end-line="0" selection-end-column="18" />
@@ -79,7 +79,7 @@
         </entry>
       </file>
       <file leaf-file-name="urls.dot" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Project 2/urls.dot">
+        <entry file="file://$PROJECT_DIR$/Project 2/Input/urls.dot">
           <provider selected="true" editor-type-id="LargeFileEditor">
             <state />
           </provider>
@@ -176,9 +176,11 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Rob\git\WebScienceGroup2\Webscience\Project 2\Output" />
+      <recent name="C:\Users\Rob\git\WebScienceGroup2\Webscience\Project 2\Input" />
+      <recent name="C:\Users\Rob\git\WebScienceGroup2\Webscience\Project 2\Files" />
       <recent name="C:\Users\Rob\git\WebScienceGroup2\Webscience\Project 2" />
       <recent name="C:\Users\Rob\git\WebScienceGroup2\Webscience" />
-      <recent name="C:\Users\Rob\PycharmProjects\Webscience\Project 2" />
     </key>
   </component>
   <component name="RunManager" selected="Python.analyzer">
@@ -455,7 +457,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Project 2/result.txt">
+    <entry file="file://$PROJECT_DIR$/Project 2/Output/result.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2657593">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -463,7 +465,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Project 2/utwente_result.txt">
+    <entry file="file://$PROJECT_DIR$/Project 2/Output/utwente_result.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="289">
           <caret line="0" column="18" selection-start-line="0" selection-start-column="13" selection-end-line="0" selection-end-column="18" />
@@ -481,7 +483,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Project 2/urls.dot">
+    <entry file="file://$PROJECT_DIR$/Project 2/Input/urls.dot">
       <provider selected="true" editor-type-id="LargeFileEditor">
         <state />
       </provider>
@@ -547,12 +549,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Project 2/edges.dot">
+    <entry file="file://$PROJECT_DIR$/Project 2/Input/edges.dot">
       <provider selected="true" editor-type-id="LargeFileEditor">
         <state />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Project 2/utwente_result.txt">
+    <entry file="file://$PROJECT_DIR$/Project 2/Output/utwente_result.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.0" vertical-offset="0" max-vertical-offset="289">
           <caret line="0" column="18" selection-start-line="0" selection-start-column="13" selection-end-line="0" selection-end-column="18" />
@@ -560,7 +562,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Project 2/utwente.dot">
+    <entry file="file://$PROJECT_DIR$/Project 2/Files/utwente.dot">
       <provider selected="true" editor-type-id="LargeFileEditor">
         <state />
       </provider>
@@ -575,7 +577,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Project 2/utwente20151116.dot">
+    <entry file="file://$PROJECT_DIR$/Project 2/Files/utwente20151116.dot">
       <provider selected="true" editor-type-id="LargeFileEditor">
         <state />
       </provider>
@@ -600,7 +602,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Project 2/result.txt">
+    <entry file="file://$PROJECT_DIR$/Project 2/Output/result.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2657593">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -608,7 +610,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Project 2/urls.dot">
+    <entry file="file://$PROJECT_DIR$/Project 2/Input/urls.dot">
       <provider selected="true" editor-type-id="LargeFileEditor">
         <state />
       </provider>
