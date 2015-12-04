@@ -3,6 +3,8 @@ import tools
 import time
 from heapq import heappush, heappop
 from itertools import count
+import os.path
+
 
 class Analyzer():
 
@@ -24,18 +26,18 @@ class Analyzer():
         scc.remove(gscc)
         return gscc
 
-    def generate_pagerank(self, graph):
+    def generate_pagerank(self, graph, amount):
         '''
         Generates a list of tuples of nodes and their pagerank sorted on pagerank
         :param graph:
         :return a list of tuples of nodes and their pagerank:
         '''
         pr = nx.pagerank(graph, alpha=0.9)
-        return sorted(pr.items(), key=lambda x:x[1])
+        return sorted(pr.items(), key=lambda x:x[1], reverse=True)[0:amount]
 
     def generate_in_out(self, graph, scc, gscc, interval, print):
         '''
-        Generates the in and out sets of @param graph and the strongly connected components which make up these sets.
+        Generates the in and out sets of @param graph, the strongly connected components which make up these sets.
         :param graph:
         :param scc:
         :param gscc:
@@ -60,6 +62,15 @@ class Analyzer():
         return inc, incsubsets, outc, outcsubsets
 
     def generate_tend_tun_disc(self, graph, incsubsets, outcsubsets, scc, interval, print):
+        '''
+        Generates the tendrils, tubes and disconnected sets of @param graph and the strongly connected components which make up these sets.
+        :param graph:
+        :param incsubsets:
+        :param outcsubsets:
+        :param scc
+        :param interval:
+        :return inset, outset, inscc's, outscc's:
+        '''
         tenc, tubec, disc = set(), set(), set()
         sccsize = len(scc)
         for index, c in enumerate(scc):
@@ -92,6 +103,7 @@ class Analyzer():
                     disc = disc.union(c)
         return tenc, tubec, disc
 
+    # Returns whether a path between the source and the target exists in the provided graph
     def path_exists_bi_dijkstra(self, G, source, target, weight = 'weight'):
         if source == target:
             return True
@@ -135,21 +147,12 @@ class Analyzer():
                 return True
 
             for w in neighs[dir](v):
-                if (dir == 0):  # forward
-                    if G.is_multigraph():
-                        minweight = min((dd.get(weight, 1)
-                                         for k, dd in G[v][w].items()))
-                    else:
-                        minweight = G[v][w].get(weight, 1)
+                if dir == 0:  # forward
+                    minweight = G[v][w].get(weight, 1)
                     vwLength = dists[dir][v] + minweight  # G[v][w].get(weight,1)
                 else:  # back, must remember to change v,w->w,v
-                    if G.is_multigraph():
-                        minweight = min((dd.get(weight, 1)
-                                         for k, dd in G[w][v].items()))
-                    else:
-                        minweight = G[w][v].get(weight, 1)
+                    minweight = G[w][v].get(weight, 1)
                     vwLength = dists[dir][v] + minweight  # G[w][v].get(weight,1)
-
                 if w in dists[dir]:
                     if vwLength < dists[dir][w]:
                         raise ValueError(
@@ -170,6 +173,7 @@ class Analyzer():
                             finalpath = paths[0][w] + revpath[1:]
         return False
 
+    # Returns whether the start node can reach the stop node via any path in the graph
     def can_reach(self, graph, start, stop):
         return self.path_exists_bi_dijkstra(graph, start, stop)
 
@@ -179,34 +183,84 @@ class Analyzer():
                 print(tx),
             print(txt[-1])
 
+    # Calculates the PageRank and Bow-Tie structure using the second method for trimming
     def run(self, source, dest, treshold, pp):
-        print_interval = 100
+        total_time = time.time()
         start_time = time.time()
-        graph = tools.load_graph(source, treshold)
-        self.my_print(pp, 'Graph loaded from ', source)
+        self.my_print(pp, 'Verifying required files..')
+        # Check for existence source and whether it can write to destination
+        if not os.path.isfile(source):
+            raise IOError("Source file not found: " + source)
+        if os.path.isfile(dest) and not os.access(dest, os.W_OK):
+            raise IOError("Cannot write to destination file: " + dest)
 
-        pr = self.generate_pagerank(graph)
-        self.my_print(pp, 'Pagerank calculated')
+        # Check whether source is already splitted into edges.csv and urls.csv
+        # otherwise create those files
+        indegrees_invalid = False
+        if not (os.path.isfile("Input/urls.csv") and os.path.isfile("Input/edges.csv")):
+            self.my_print(pp, '> Generating edges.csv and urls.csv from source file: ' + source)
+            tools.split_dot_file(source, "Input/urls.csv", "Input/edges.csv")
+            indegrees_invalid = True
 
+        # Check the in-degrees are already calculated
+        # otherwise create those files
+        if indegrees_invalid or not os.path.isfile("Input/indegrees.csv"):
+            self.my_print(pp, '> Generating indegrees.csv from edges.csv')
+            tools.calculate_indegrees("Input/edges.csv", "Input/indegrees.csv")
+        self.my_print(pp, '> Done (' + str(time.time() - start_time) + ' sec.)')
+
+        # if True, it will only calculate the PageRank
+        only_page_rank = False
+
+        print_interval = 100
+
+        start_time = time.time()
+        self.my_print(pp, 'Loading graph (' + source + ')..')
+        graph = tools.load_graph("Input/edges.csv", treshold)
+        urls = tools.load_urls("Input/urls.csv")
+        indegrees = tools.load_indegrees("Input/indegrees.csv")
+        self.my_print(pp, '> Found: ' + str(nx.number_of_nodes(graph)) + ' nodes')
+        self.my_print(pp, '> Done (' + str(time.time() - start_time) + ' sec.)')
+
+        start_time = time.time()
+        self.my_print(pp, 'Calculating PageRank of all nodes..')
+        pr = self.generate_pagerank(graph, 1000)
+        self.my_print(pp, '> Done (' + str(time.time() - start_time) + ' sec.)')
+
+        start_time = time.time()
+        self.my_print(pp, 'Calculating the strongly connected components..')
         scc = self.yield_scc(graph)
-        self.my_print(pp, 'Found scc\'s - amount = ', len(scc))
+        self.my_print(pp, '> Found: ' + str(len(scc)) + ' scc\'s')
+        self.my_print(pp, '> Avg nodes per scc: ' + str(nx.number_of_nodes(graph) / float(len(scc))))
+        self.my_print(pp, '> Done (' + str(time.time() - start_time) + ' sec.)')
 
+        start_time = time.time()
+        self.my_print(pp, 'Calculating the huge strongly connected component..')
         gscc = self.yield_gscc(scc)
-        self.my_print(pp, 'Found scc\'s - len = ', len(gscc))
+        self.my_print(pp, '> Length: ' + str(len(gscc)) + ' nodes')
+        self.my_print(pp, '> Done (' + str(time.time() - start_time) + ' sec.)')
 
-        inc, incsubsets, outc, outcsubsets = self.generate_in_out(graph, scc, gscc, print_interval, pp)
-        self.my_print(pp, 'Found the in & out sets')
+        if not only_page_rank:
 
-        tenc, tubec, disc = self.generate_tend_tun_disc(graph, incsubsets, outcsubsets, scc, print_interval, pp)
-        self.my_print(pp, 'Found tendrils & tube & disconnected sets')
+            start_time = time.time()
+            self.my_print(pp, 'Calculating the In- and Out-sets of the graph..')
+            inc, incsubsets, outc, outcsubsets = self.generate_in_out(graph, scc, gscc, print_interval, pp)
+            self.my_print(pp, '> Found: ' + str(len(inc)) + ' In-set(s) and ' + str(len(outc)) + ' Out-set(s)')
+            self.my_print(pp, '> Done (' + str(time.time() - start_time) + ' sec.)')
 
-        tools.write_results(dest, pr, inc, outc, tenc, tubec, disc)
-        self.my_print(pp, 'Writing results to ', dest)
-        elapsed_time = time.time() - start_time
-        self.my_print(pp, 'Time duration ', elapsed_time, 's')
+            start_time = time.time()
+            self.my_print(pp, 'Calculating the Tendrils-, Tubes- and Disconnected-sets of the graph..')
+            tenc, tubec, disc = self.generate_tend_tun_disc(graph, incsubsets, outcsubsets, scc, print_interval, pp)
+            self.my_print(pp, '> Found: ' + str(len(tenc)) + ' Tendrils-set(s), '
+                          + str(len(tubec)) + ' Tube-set(s), ' + str(len(disc)) + ' Disconnected-set(s), ')
+            self.my_print(pp, '> Done (' + str(time.time() - start_time) + ' sec.)')
+
+        start_time = time.time()
+        self.my_print(pp, 'Writing results to destination file (' + dest + ')..')
+        tools.write_results(dest, pr, gscc, inc, outc, tenc, tubec, disc, indegrees, urls, len(graph.nodes()))
+        self.my_print(pp, '> Done (' + str(time.time() - start_time) + ' sec.)')
+        self.my_print(pp, '> Total duration: ' + str(time.time() - total_time) + ' sec.')
 
 an = Analyzer()
-an.run('Input/edges.dot', 'Output/utwente_result.txt', 100, True)
-
-
-
+#       the input file            the output file              number of nodes to use    whether to print the status
+an.run('Files/UTwente_graph.dot', 'Output/UTwente_result.csv', 1000,                   True)
